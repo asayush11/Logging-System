@@ -5,9 +5,17 @@ import java.util.List;
 
 public class FileAppender implements LogAppender{
 
-    private final static List<LogMessage> logMessages  = new ArrayList<>();
+    private final List<LogMessage> logMessages  = new ArrayList<>();
+    private static FileAppender soInstance;
 
-    public FileAppender() {
+    private FileAppender() {
+    }
+
+    public static synchronized FileAppender getInstance(){
+        if(soInstance == null){
+            soInstance = new FileAppender();
+        }
+        return soInstance;
     }
 
     @Override

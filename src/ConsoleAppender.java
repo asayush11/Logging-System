@@ -1,5 +1,7 @@
 package src;
 
+import com.github.weisj.jsvg.C;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,7 +9,16 @@ public class ConsoleAppender implements LogAppender{
 
     private final static List<LogMessage> logMessages = new ArrayList<>();
 
-    public ConsoleAppender() {
+    private static ConsoleAppender soInstance;
+
+    private ConsoleAppender() {
+    }
+
+    public static synchronized ConsoleAppender getInstance(){
+        if(soInstance == null){
+            soInstance = new ConsoleAppender();
+        }
+        return soInstance;
     }
 
     @Override

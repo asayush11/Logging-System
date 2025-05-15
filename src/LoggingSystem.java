@@ -3,24 +3,32 @@ package src;
 import java.util.UUID;
 
 public class LoggingSystem {
-    private static LoggingSystem instance;
+    private static volatile LoggingSystem instance;
     private LogAppender logAppender;
     private LogLevel logLevel;
     private LoggingSystem() {
-        logAppender = new ConsoleAppender();
+        logAppender = ConsoleAppender.getInstance();
         logLevel = LogLevel.DEBUG;
         System.out.println("Initially logs are appended to Console and root level is DEBUG");
     }
 
     public static synchronized LoggingSystem getInstance() {
         if(instance == null) {
-            instance = new LoggingSystem();
+            synchronized (LoggingSystem.class){
+                if(instance == null){
+                    instance = new LoggingSystem();
+                }
+            }
         }
         return instance;
     }
 
-    public void setLogAppender(LogAppender logAppender) {
-        this.logAppender = logAppender;
+    public void setLogAppender(Appender appender) {
+        switch (appender){
+            case ELK -> this.logAppender = ElasticSearchAppender.getInstance();
+            case FILE -> this.logAppender = FileAppender.getInstance();
+            case CONSOLE -> this.logAppender = ConsoleAppender.getInstance();
+        }
         System.out.println("Logger Appender is updated to " + logAppender.toString());
     }
 
@@ -38,7 +46,8 @@ public class LoggingSystem {
         System.out.println("Root log level set to " + logLevel);
     }
 
-    public void displayLog(LogAppender logAppender) {
-        logAppender.displayLogs();
+    public void displayLog(Appender appender) {
+        setLogAppender(appender);
+        this.logAppender.displayLogs();
     }
 }

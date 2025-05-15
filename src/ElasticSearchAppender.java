@@ -6,7 +6,16 @@ import java.util.List;
 public class ElasticSearchAppender implements LogAppender{
     private final static List<LogMessage> logMessages = new ArrayList<>();
 
-    public ElasticSearchAppender() {
+    private static ElasticSearchAppender soInstance;
+
+    private ElasticSearchAppender() {
+    }
+
+    public static synchronized ElasticSearchAppender getInstance(){
+        if(soInstance == null){
+            soInstance = new ElasticSearchAppender();
+        }
+        return soInstance;
     }
 
     @Override
